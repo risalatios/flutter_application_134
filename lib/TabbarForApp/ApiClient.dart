@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,7 +26,7 @@ class ApiClient {
     url,
     data: data,
     options: Options(headers: {
-      'Authorization': 'Bearer $token', // Add the token to the headers
+      'TOKEN': '$token', // Add the token to the headers
       'Content-Type': 'application/json', // Example content type, adjust as needed
     }),
   );

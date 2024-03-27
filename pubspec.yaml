@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+    
    
    
 
@@ -22,6 +23,7 @@ dependencies:
   shared_preferences: ^2.0.13  # shared_preferences: ^2.2.2 # for shared preferences
   flutter_iconly: ^1.0.2 # icons
   dio: ^5.4.1
+   
 
 dev_dependencies:
   flutter_test:
@@ -40,6 +42,17 @@ flutter:
      - images/loginback.png
      - images/rightarrow.png
      - images/tacologo.png
+     - images/carton.png
+     - images/cartoff.png
+     - images/carton.png
+     - images/menuoff.png
+     - images/menuon.png
+     - images/rewardon.png
+     - images/rewardoff.png
+     - images/accounton.png
+     - images/accountoff.png
+     - images/storeon.png
+     - images/storeoff.png
     
  
 

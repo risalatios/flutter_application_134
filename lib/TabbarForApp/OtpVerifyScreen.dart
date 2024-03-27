@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_134/TabbarForApp/AppLoader.dart';
 import 'package:flutter_application_134/TabbarForApp/LoginController.dart';
 import 'package:flutter_application_134/TabbarForApp/LoginScreen.dart';
 import 'package:flutter_application_134/TabbarForApp/TabbarViewCustom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class OtpVerifyScreen extends StatefulWidget {
   final String mobileNumber;
 
@@ -381,7 +383,9 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
 
   void verifyOtp()async{
       print("fvdffdv ${widget.mobileNumber}");
-    final response = await loginController.verifyOtp(widget.mobileNumber,enteredOtp);
+try {
+  final response = await loginController.verifyOtp(widget.mobileNumber,enteredOtp);
+
      if (response["status"] == 200){
         navigateToOtpScreen(context);
      String tokenForApi = response['data']['token'];
@@ -391,6 +395,18 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
       MyDialogUtils.showDialogBox(context, message);
      }
      print(response);
+  // ...
+} on DioError catch (e) {
+  if (e.response != null && e.response?.statusCode == 400) {
+    // Handle the 400 bad request error
+    print('Bad request error: ${e.response?.data}');
+    // Display an error message to the user or take appropriate action
+  } else {
+    // For other Dio errors, rethrow the exception
+    rethrow;
+  }
+}
+
      
   }
   Future<void> saveToken(String token) async {

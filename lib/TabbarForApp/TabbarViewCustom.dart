@@ -31,28 +31,28 @@ Widget build(BuildContext context) {
     bottomNavigationBar: BottomNavigationBar(
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_off_menu@3x.png', width: 24, height: 24),
-          activeIcon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_on_menu@3x.png', width: 24, height: 24),
+          icon: Image.asset('images/menuoff.png', width: 24, height: 24),
+          activeIcon: Image.asset('images/menuon.png', width: 24, height: 24),
           label: 'HOME',
         ),
         BottomNavigationBarItem(
-          icon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_off_cart@3x.png', width: 24, height: 24),
-          activeIcon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_on_cart@3x.png', width: 24, height: 24),
+          icon: Image.asset('images/cartoff.png', width: 24, height: 24),
+          activeIcon: Image.asset('images/carton.png', width: 24, height: 24),
           label: 'CART',
         ),
         BottomNavigationBarItem(
-          icon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_off_rewards@3x.png', width: 24, height: 24),
-          activeIcon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_on_rewards@3x.png', width: 24, height: 24),
+          icon: Image.asset('images/rewardoff.png', width: 24, height: 24),
+          activeIcon: Image.asset('images/rewardon.png', width: 24, height: 24),
           label: 'REWARDS',
         ),
         BottomNavigationBarItem(
-          icon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_off_stores@3x.png', width: 24, height: 24),
-          activeIcon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_on_stores@3x.png', width: 24, height: 24),
+          icon: Image.asset('images/storeoff.png', width: 24, height: 24),
+          activeIcon: Image.asset('images/storeon.png', width: 24, height: 24),
           label: 'STORES',
         ),
         BottomNavigationBarItem(
-           icon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_off_account@3x.png', width: 24, height: 24),
-          activeIcon: Image.asset('/Users/risalat/Documents/flutter_application_134/web/ic_on_account@3x.png', width: 24, height: 24),
+           icon: Image.asset('images/accountoff.png', width: 24, height: 24),
+          activeIcon: Image.asset('images/accounton.png', width: 24, height: 24),
           label: 'ACCOUNT',
         ),
       ],

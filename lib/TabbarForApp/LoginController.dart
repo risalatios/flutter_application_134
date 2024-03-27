@@ -19,10 +19,10 @@ class LoginController{
 
   Future<Map<String, dynamic>> getHomeData() async {
   final requestData = {
-    'limit': 50,
+    'limit': 15,
     'offset': 0,
-    'title': "Delhi Drapes",
-    'filter_ids': {"1","2"}, 
+    'title': "Latest Products",
+    'filter_ids': {}, 
   };
 
   final response = await apiClient.postWithToken(

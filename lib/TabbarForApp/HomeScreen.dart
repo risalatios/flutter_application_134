@@ -15,38 +15,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
- List<String> dataList = [
-    'https://graphicsfamily.com/wp-content/uploads/edd/2023/05/Website-Food-Banner-Design-scaled.jpg', // Replace with your image paths
-    'https://graphicsfamily.com/wp-content/uploads/edd/2022/02/Free-Food-Advertising-Banner-Template.jpg',
-    'https://graphicsfamily.com/wp-content/uploads/edd/2023/05/Website-Food-Banner-Design-scaled.jpg',
-    
-  ];
 
-  final List<String> urlsForImages = [
-    'https://66b4fb5b0eb079420f42-f8d2ee6acac1b4bd28ecd85cc6789b99.ssl.cf1.rackcdn.com/_Mexican-Taco-Donner-and-Beer.jpg',
-    'https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2019/08/1-7.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe5W6ynE_fByk_nF0ijV9pog8F170LFojTJH0dh6d3agrNeSlmYIl89qMA0I6BVjjENEM&usqp=CAU',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQdSjvxbDEZe84MfWZeOXf06tgdmInOoBga3FMwFGrfdzG2EhgWqOSGN9u48JXwBezRgY&usqp=CAU',
-    'https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2019/08/1-7.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe5W6ynE_fByk_nF0ijV9pog8F170LFojTJH0dh6d3agrNeSlmYIl89qMA0I6BVjjENEM&usqp=CAU',
-    'https://media.istockphoto.com/id/459396345/photo/taco.jpg?s=612x612&w=0&k=20&c=_yCtd6OEb2L8xNal4kC1xvm8HoBp8sry6tcBwmxmPHw=',
-    'https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2019/08/1-7.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe5W6ynE_fByk_nF0ijV9pog8F170LFojTJH0dh6d3agrNeSlmYIl89qMA0I6BVjjENEM&usqp=CAU',
-    'https://media.istockphoto.com/id/459396345/photo/taco.jpg?s=612x612&w=0&k=20&c=_yCtd6OEb2L8xNal4kC1xvm8HoBp8sry6tcBwmxmPHw=',
-    'https://www.shutterstock.com/blog/wp-content/uploads/sites/5/2019/08/1-7.jpg',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe5W6ynE_fByk_nF0ijV9pog8F170LFojTJH0dh6d3agrNeSlmYIl89qMA0I6BVjjENEM&usqp=CAU',
-  ];
+ late List<Products> datat = [];
+ late List<Products> banners = [];
+  
+  Object? get boutiques => null;
 
   @override
   void initState() {
     super.initState();
      //getHomeData();
-     postWithToken();
+     verifyOtp();
   }
-   void getHomeData()async{
+  
+   void verifyOtp()async{
     final response = await loginController.getHomeData();
      if (response["status"] == 200){
-       
+        //final Map<String, dynamic> responseData = jsonDecode(response);
+        final ApiResponse apiResponse = ApiResponse.fromJson(response);
+          print("hello");
+        print(apiResponse.dataList[2].imageUrl);
+        setState(() {
+         datat = apiResponse.dataList;
+        });
+
+       if (datat.length >= 3) {
+           setState(() {
+        banners = datat.sublist(0, 3); // Extract the first three models
+         });
+      } else {
+           setState(() {
+          banners = datat; // If there are less than three models, use the entire list
+            });
+      }
      }else{
       String message = "verify otp failed used valid otp";
       MyDialogUtils.showDialogBox(context, message);
@@ -55,75 +56,55 @@ class HomeScreenState extends State<HomeScreen> {
      
   }
 
-
-
-Future<void> postWithToken() async {
-  // Get token from SharedPreferences
+Future<ApiResponse?> getHomeData() async {
+  final String apiUrl = 'http://165.232.191.15/api/v1/bazaar/homepage/dynamic/';
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //var token = prefs.getString('token');
-  var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vcGFyYXMtbGFicy5seXhlbGFuZGZsYW1pbmdvdGVjaC5pbi9hcGkvdmVyaWZ5b3RwIiwiaWF0IjoxNzExMTI3NTM3LCJleHAiOjE3MTExMzExMzcsIm5iZiI6MTcxMTEyNzUzNywianRpIjoiNHNaVnJFODdpQVdZdjY1ViIsInN1YiI6IjI1NCIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.I4C7jdyZfen_SSwm4p2kVEblDyz5zb5_qKJPmwcMwbc";
-  print('Token: $token');
+  var token = prefs.getString('token');
 
-  if (token == null) {
-    // Handle case where token is not available
-    print('Token not available');
-    return;
-  }
-
-  // API endpoint URL
-  String apiUrl = 'http://paras-labs.lyxelandflamingotech.in/api/enableBiometric';
-
-  // Request headers with token
-  Map<String, String> headers = {
-    'Authorization': 'Bearer $token',
-    'Content-Type': 'application/json',
-  };
-
-// Request body parameters
-  Map<String, dynamic> body = {
-  'mobile': '2222222222',
-  'otp': '111111',
-  // 'products': [
-  //   {
-  //     'productId': 1,
-  //     'productName': 'Product 1',
-  //     'quantity': 2,
-  //   },
-  //   {
-  //     'productId': 2,
-  //     'productName': 'Product 2',
-  //     'quantity': 1,
-  //   },
-    // Add more products as needed
- // ],
-};
-
-
-  // Encode the request body as JSON
-  String requestBody = json.encode(body);
-
-
-  // Make the POST request
   try {
     final response = await http.post(
       Uri.parse(apiUrl),
-      headers: headers,
-      body: requestBody,
+      headers: {
+       'TOKEN': '$token', // Add the token to the headers
+      'Content-Type': 'application/json', // Example content type, adjust as needed
+      },
+      body: jsonEncode({
+        'limit': 15,
+       'offset': 0,
+       'title': "Latest Products",
+       'filter_ids': {}, 
+      }),
     );
 
-    if (response.statusCode == 201) {
-      // Request successful, new resource created
-      print('Request successful: ${response.body}');
+    if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final ApiResponse apiResponse = ApiResponse.fromJson(responseData);
+          print("hello");
+        print(apiResponse.dataList[2].imageUrl);
+        setState(() {
+         datat = apiResponse.dataList;
+        });
+
+       if (datat.length >= 3) {
+           setState(() {
+        banners = datat.sublist(0, 3); // Extract the first three models
+         });
+      } else {
+           setState(() {
+          banners = datat; // If there are less than three models, use the entire list
+            });
+      }
     } else {
-      // Request failed, handle error
-      print('Request failed with status: ${response.statusCode}');
-      print('Response: ${response.body}');
+      // Handle error response
+      print('Error: ${response.statusCode}');
+      return null;
     }
   } catch (e) {
-    // Error making request
-    print('Error making POST request: $e');
+    print('Error: $e');
+    return null;
   }
 }
+
 
 
   @override
@@ -138,22 +119,22 @@ Future<void> postWithToken() async {
             crossAxisAlignment: CrossAxisAlignment.start,
            children: [
              Text(
-                    'Taco Banners',
+                    'Bringin Banners',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
                 ),
                   SizedBox(height: 8),
-                BannerCell(dataList),
+                  BannerCell(banners),
                  SizedBox(height: 8),
                 Text(
-                    'Taco Products',
+                    'Bringin Products',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
                 ),
                   SizedBox(height: 8),
                 SizedBox(
-                  height: urlsForImages.length * 100, // Set the desired height of the grid
+                  height: datat.length * 100, // Set the desired height of the grid
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: VerticalGridScreen(urlsForImages),
+                    child: VerticalGridScreen(datat),
                   ),
                 ),
               ],
@@ -166,11 +147,127 @@ Future<void> postWithToken() async {
 
 }
 
+
+class ApiResponse {
+  final bool success;
+  final String summary;
+  final List<Products> dataList;
+
+  ApiResponse({
+    required this.success,
+    required this.summary,
+    required this.dataList,
+  });
+
+  factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    return ApiResponse(
+      success: json['data']['success'] ?? false,
+      summary: json['data']['summary'] ?? '',
+      dataList: (json['data']['data'] as List<dynamic>?)
+          ?.map((e) => Products.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [],
+    );
+  }
+}
+
+
+
+
+class Products {
+  final int id;
+  final int parentItemId;
+  final String boutiqueId;
+  final String itemName;
+  final String description;
+  final String itemMainPic;
+  final double itemPrice;
+  final String fit;
+  final String sku;
+  final bool isCustomisable;
+  final String? care;
+  final String? colour;
+  final String butqName;
+  final String profilePic;
+  final String coverPic;
+  final String butqDescription;
+  final String email;
+  final String phone;
+  final int isActive;
+  final double? locationLat;
+  final double? locationLong;
+  final String ownerId;
+  final String imageUrl;
+  final String? muxAssetId;
+  final String? muxLivestreamId;
+
+  Products({
+    required this.id,
+    required this.parentItemId,
+    required this.boutiqueId,
+    required this.itemName,
+    required this.description,
+    required this.itemMainPic,
+    required this.itemPrice,
+    required this.fit,
+    required this.sku,
+    required this.isCustomisable,
+    this.care,
+    this.colour,
+    required this.butqName,
+    required this.profilePic,
+    required this.coverPic,
+    required this.butqDescription,
+    required this.email,
+    required this.phone,
+    required this.isActive,
+    this.locationLat,
+    this.locationLong,
+    required this.ownerId,
+    required this.imageUrl,
+    this.muxAssetId,
+    this.muxLivestreamId,
+  });
+
+  factory Products.fromJson(Map<String, dynamic> json) {
+    return Products(
+      id: json['id'] ?? 0,
+      parentItemId: json['parent_item_id'] ?? 0,
+      boutiqueId: json['boutique_id'] ?? '',
+      itemName: json['item_name'] ?? '',
+      description: json['description'] ?? '',
+      itemMainPic: json['item_main_pic'] ?? '',
+      itemPrice: (json['item_price'] ?? 0.0).toDouble(),
+      fit: json['fit'] ?? '',
+      sku: json['sku'] ?? '',
+      isCustomisable: json['is_customisable'] ?? false,
+      care: json['care'],
+      colour: json['colour'],
+      butqName: json['butq_name'] ?? '',
+      profilePic: json['profile_pic'] ?? '',
+      coverPic: json['cover_pic'] ?? '',
+      butqDescription: json['butq_description'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
+      isActive: json['is_active'] ?? 0,
+      locationLat: (json['location_lat'] ?? 0.0).toDouble(),
+      locationLong: (json['location_long'] ?? 0.0).toDouble(),
+      ownerId: json['owner_id'] ?? '',
+      imageUrl: json['image_url'] ?? '',
+      muxAssetId: json['mux_assest_id'],
+      muxLivestreamId: json['mux_livestream_id'],
+    );
+  }
+}
+
+
+
+//
+
 //
 class BannerCell extends StatefulWidget {
-  final List<String> bannerArrays;
+  final List<Products> bannerArrays;
   BannerCell(this.bannerArrays);
-
+  
   @override
   _BannerCellState createState() => _BannerCellState();
 }
@@ -193,14 +290,17 @@ class _BannerCellState extends State<BannerCell> {
     super.dispose();
   }
 
-  void _startAutoScroll() {
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      setState(() {
+ void _startAutoScroll() {
+  _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+    setState(() {
+      if (widget.bannerArrays.length > 0) { // Check if bannerArrays is not empty
         _currentIndex = (_currentIndex + 1) % widget.bannerArrays.length;
         _scrollToIndex(_currentIndex);
-      });
+      }
     });
-  }
+  });
+}
+
 
   void _scrollToIndex(int index) {
     _scrollController.animateTo(
@@ -212,20 +312,23 @@ class _BannerCellState extends State<BannerCell> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    return SizedBox(
-      height: 180,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.bannerArrays.length,
-        controller: _scrollController,
-        itemBuilder: (context, index) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return SizedBox(
+    height: 180,
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: widget.bannerArrays.length,
+      controller: _scrollController,
+      itemBuilder: (context, index) {
+        // Check if imageUrl is not empty
+        if (widget.bannerArrays[index].imageUrl.isNotEmpty) {
           return Row(
             children: [
               Container(
-                width: screenWidth - 16,
+                  height: 180, // Adjust height as needed
+                  width: screenWidth - 16,
                 child: Image.network(
-                  widget.bannerArrays[index],
+                  widget.bannerArrays[index].imageUrl,
                   fit: BoxFit.fill,
                   loadingBuilder: (BuildContext context, Widget child,
                       ImageChunkEvent? loadingProgress) {
@@ -244,53 +347,103 @@ class _BannerCellState extends State<BannerCell> {
               SizedBox(width: 12),
             ],
           );
-        },
-      ),
-    );
-  }
-}
-
-
-class VerticalGridScreen extends StatelessWidget {
-
-   final List<String> imageUrls;
-  VerticalGridScreen(this.imageUrls);
-
-  @override
- Widget build(BuildContext context) {
-  return GridView.builder(
-    physics: NeverScrollableScrollPhysics(),
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2, // Two items per row
-      mainAxisSpacing: 16.0, // Spacing between rows
-      crossAxisSpacing: 16.0, // Spacing between columns
+        } else {
+          // If imageUrl is empty, return an empty SizedBox
+          return SizedBox();
+        }
+      },
     ),
-    scrollDirection: Axis.vertical,
-    itemCount: imageUrls.length,
-    itemBuilder: (BuildContext context, int index) {
-      return GridTile(
-        child: Container(
-           child: Image.network(
-                  imageUrls[index],
-                  fit: BoxFit.fill,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                ),
-         
-        ),
-      );
-    },
   );
 }
 
+}
+
+class VerticalGridScreen extends StatelessWidget {
+  final List<Products> imageUrls;
+
+  VerticalGridScreen(this.imageUrls);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, // Two items per row
+        mainAxisSpacing: 16.0, // Spacing between rows
+        crossAxisSpacing: 16.0, // Spacing between columns
+      ),
+      scrollDirection: Axis.vertical,
+      itemCount: imageUrls.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          elevation: 2,
+          margin: EdgeInsets.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: 30,
+     child: Image.network(
+    imageUrls[index].itemMainPic?.isNotEmpty ?? false
+        ? imageUrls[index].itemMainPic!
+        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdh87wRxK1XDWDjCCHi1BHgjkM0wzDRC89bHdndVxgHouG0QGSK_VAKir9rdQNVNm0poA&usqp=CAU",
+    fit: BoxFit.cover,
+    loadingBuilder: (BuildContext context, Widget child,
+        ImageChunkEvent? loadingProgress) {
+      if (loadingProgress == null) return child;
+      return Center(
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded /
+                  loadingProgress.expectedTotalBytes!
+              : null,
+        ),
+      );
+    },
+  ),
+),
+
+              ),
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        imageUrls[index].itemName, // Product name
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4), // Add some space between product name and price
+                      Text(
+                        "Price: ${imageUrls[index].itemPrice}", // Product price
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      SizedBox(height: 4), // Add some space between price and description
+                      Text(
+                        imageUrls[index].description, // Product description
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
