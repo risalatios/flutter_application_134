@@ -10,9 +10,8 @@ environment:
 
 dependencies:
   flutter:
-    sdk: flutter
-    
-   
+   sdk: flutter
+  
    
 
 
@@ -23,13 +22,16 @@ dependencies:
   shared_preferences: ^2.0.13  # shared_preferences: ^2.2.2 # for shared preferences
   flutter_iconly: ^1.0.2 # icons
   dio: ^5.4.1
-   
-
+  geolocator: ^7.6.2
+  geocoding: ^2.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  
+    
   flutter_lints: ^3.0.0
+   
+   
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

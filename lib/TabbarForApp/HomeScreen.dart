@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_134/TabbarForApp/LoginController.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'LoginScreen.dart'; 
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+
+
 
 class HomeScreen extends StatefulWidget {
 
@@ -18,15 +24,65 @@ class HomeScreenState extends State<HomeScreen> {
 
  late List<Products> datat = [];
  late List<Products> banners = [];
-  
-  Object? get boutiques => null;
+ String? state;
+ String? city;
+ String? homeAddress;
+ Object? get boutiques => null;
 
   @override
   void initState() {
     super.initState();
      //getHomeData();
-     verifyOtp();
+       verifyOtp();
+     _fetchLocation();
   }
+
+ Future<void> _fetchLocation() async {
+    try {
+      // Get the current position (latitude and longitude)
+      Position position = await Geolocator.getCurrentPosition(
+         desiredAccuracy: LocationAccuracy.high,
+        );
+
+       
+      // Reverse geocoding to get address information
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude, position.longitude);
+
+      // Extract state and city from the address
+      setState(() {
+     
+    if (placemarks.isNotEmpty) {
+    state = placemarks.first.administrativeArea ?? 'Unknown';
+    city = placemarks.first.locality ?? 'Unknown';
+     var first = placemarks.first;
+      var s =' ${first.locality}, ${first.administrativeArea},${first.subLocality}, ${first.subAdministrativeArea},${first.thoroughfare}, ${first.subThoroughfare}';
+    homeAddress = s;
+  
+   } else {
+  state = 'Unknown';
+  city = 'Unknown';
+  }
+
+      });
+    } catch (e) {
+      print('Error fetching location: $e');
+      setState(() {
+        state = 'Unknown';
+        city = 'Unknown';
+      });
+    }
+  }
+
+
+
+List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
+  if (list.length <= n) {
+    return List<Products>.from(list);
+  }
+  return list.sublist(list.length - n);
+}
+
   
    void verifyOtp()async{
     final response = await loginController.getHomeData();
@@ -36,7 +92,8 @@ class HomeScreenState extends State<HomeScreen> {
           print("hello");
         print(apiResponse.dataList[2].imageUrl);
         setState(() {
-         datat = apiResponse.dataList;
+           List<Products> last10Items = getLastNItemsFromModelList(apiResponse.dataList, 10);
+         datat = last10Items;
         });
 
        if (datat.length >= 3) {
@@ -110,7 +167,7 @@ Future<ApiResponse?> getHomeData() async {
   @override
   Widget build(BuildContext context) {
   return Scaffold(
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.black,
     body: ListView(
       children: [
         Padding(
@@ -118,25 +175,42 @@ Future<ApiResponse?> getHomeData() async {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
            children: [
+            Row(
+                  children: [
+                   Text(
+                    'Location-',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200, color: Colors.white)
+                ),
+                  SizedBox(width: 8),
+                    Text(
+                    '$state, ',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.white)
+                ),
+          
+              Text(
+                    '$city',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200, color: Colors.white)
+                ),
+              SizedBox(width: 8),
+                  ],
+            ),
+          
              Text(
                     'Bringin Banners',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white)
                 ),
                   SizedBox(height: 8),
                   BannerCell(banners),
                  SizedBox(height: 8),
                 Text(
                     'Bringin Products',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white)
                 ),
                   SizedBox(height: 8),
-                SizedBox(
-                  height: datat.length * 100, // Set the desired height of the grid
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: VerticalGridScreen(datat),
-                  ),
-                ),
+             Padding(
+               padding: const EdgeInsets.all(6.0),
+               child: gridViewForNew(),
+             ),
               ],
           ),
         ),
@@ -145,7 +219,180 @@ Future<ApiResponse?> getHomeData() async {
   );
 }
 
+Widget gridViewForNew() {
+   return GridView.builder(
+     physics: NeverScrollableScrollPhysics(),
+     shrinkWrap: true,
+     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 250,),
+     itemCount: datat.length, itemBuilder: (BuildContext context, int index) { 
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                 topRight: Radius.circular(12),
+                 ),
+              child: Image.network(datat[index].imageUrl?.isNotEmpty ?? false
+                      ? datat[index].imageUrl!
+                      : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdh87wRxK1XDWDjCCHi1BHgjkM0wzDRC89bHdndVxgHouG0QGSK_VAKir9rdQNVNm0poA&usqp=CAU",
+                    height: 190,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                      ),       
+            ),
+               Padding(
+                 padding: const EdgeInsets.only(left: 8),
+                 child: Text(
+                          datat[index].itemName, // Product name
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                             color: Colors.white,
+                             
+                          ),
+                        ),
+               ),
+                Padding(
+                padding: const EdgeInsets.only(left: 8),
+                  child: Container(
+                                height: 2, 
+                                width: 44,
+                               color: Colors.green,
+                                 ),
+                ),
+                     
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Text(
+                          "Price: ${datat[index].itemPrice}", // Product price
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                 
+          ],
+          
+        ),
+      );
+      },
+    
+   );
+  }
+
 }
+
+
+
+//
+class BannerCell extends StatefulWidget {
+  final List<Products> bannerArrays;
+  BannerCell(this.bannerArrays);
+  
+  @override
+  _BannerCellState createState() => _BannerCellState();
+}
+
+class _BannerCellState extends State<BannerCell> {
+  final ScrollController _scrollController = ScrollController();
+  Timer? _timer;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoScroll();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+ void _startAutoScroll() {
+  _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+    setState(() {
+      if (widget.bannerArrays.length > 0) { // Check if bannerArrays is not empty
+        _currentIndex = (_currentIndex + 1) % widget.bannerArrays.length;
+        _scrollToIndex(_currentIndex);
+      }
+    });
+  });
+}
+
+
+  void _scrollToIndex(int index) {
+    _scrollController.animateTo(
+      index * MediaQuery.of(context).size.width - 16,
+      duration: Duration(seconds: 1),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return SizedBox(
+    height: 180,
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: widget.bannerArrays.length,
+      controller: _scrollController,
+      itemBuilder: (context, index) {
+        // Check if imageUrl is not empty
+        if (widget.bannerArrays[index].imageUrl.isNotEmpty) {
+          return Row(
+            children: [
+              Container(
+                  height: 180, // Adjust height as needed
+                  width: screenWidth - 16,
+                child: Image.network(
+                  widget.bannerArrays[index].imageUrl,
+                  fit: BoxFit.fill,
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(width: 12),
+            ],
+          );
+        } else {
+          // If imageUrl is empty, return an empty SizedBox
+          return SizedBox();
+        }
+      },
+    ),
+  );
+}
+
+
+
+}
+
+
+
+
+
+
 
 
 class ApiResponse {
@@ -255,195 +502,6 @@ class Products {
       imageUrl: json['image_url'] ?? '',
       muxAssetId: json['mux_assest_id'],
       muxLivestreamId: json['mux_livestream_id'],
-    );
-  }
-}
-
-
-
-//
-
-//
-class BannerCell extends StatefulWidget {
-  final List<Products> bannerArrays;
-  BannerCell(this.bannerArrays);
-  
-  @override
-  _BannerCellState createState() => _BannerCellState();
-}
-
-class _BannerCellState extends State<BannerCell> {
-  final ScrollController _scrollController = ScrollController();
-  Timer? _timer;
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _startAutoScroll();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _scrollController.dispose();
-    super.dispose();
-  }
-
- void _startAutoScroll() {
-  _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-    setState(() {
-      if (widget.bannerArrays.length > 0) { // Check if bannerArrays is not empty
-        _currentIndex = (_currentIndex + 1) % widget.bannerArrays.length;
-        _scrollToIndex(_currentIndex);
-      }
-    });
-  });
-}
-
-
-  void _scrollToIndex(int index) {
-    _scrollController.animateTo(
-      index * MediaQuery.of(context).size.width - 16,
-      duration: Duration(seconds: 1),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-  double screenWidth = MediaQuery.of(context).size.width;
-  return SizedBox(
-    height: 180,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: widget.bannerArrays.length,
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        // Check if imageUrl is not empty
-        if (widget.bannerArrays[index].imageUrl.isNotEmpty) {
-          return Row(
-            children: [
-              Container(
-                  height: 180, // Adjust height as needed
-                  width: screenWidth - 16,
-                child: Image.network(
-                  widget.bannerArrays[index].imageUrl,
-                  fit: BoxFit.fill,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(width: 12),
-            ],
-          );
-        } else {
-          // If imageUrl is empty, return an empty SizedBox
-          return SizedBox();
-        }
-      },
-    ),
-  );
-}
-
-}
-
-class VerticalGridScreen extends StatelessWidget {
-  final List<Products> imageUrls;
-
-  VerticalGridScreen(this.imageUrls);
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Two items per row
-        mainAxisSpacing: 16.0, // Spacing between rows
-        crossAxisSpacing: 16.0, // Spacing between columns
-      ),
-      scrollDirection: Axis.vertical,
-      itemCount: imageUrls.length,
-      itemBuilder: (BuildContext context, int index) {
-        return Card(
-          elevation: 2,
-          margin: EdgeInsets.zero,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                  height: 30,
-     child: Image.network(
-    imageUrls[index].itemMainPic?.isNotEmpty ?? false
-        ? imageUrls[index].itemMainPic!
-        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdh87wRxK1XDWDjCCHi1BHgjkM0wzDRC89bHdndVxgHouG0QGSK_VAKir9rdQNVNm0poA&usqp=CAU",
-    fit: BoxFit.cover,
-    loadingBuilder: (BuildContext context, Widget child,
-        ImageChunkEvent? loadingProgress) {
-      if (loadingProgress == null) return child;
-      return Center(
-        child: CircularProgressIndicator(
-          value: loadingProgress.expectedTotalBytes != null
-              ? loadingProgress.cumulativeBytesLoaded /
-                  loadingProgress.expectedTotalBytes!
-              : null,
-        ),
-      );
-    },
-  ),
-),
-
-              ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        imageUrls[index].itemName, // Product name
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4), // Add some space between product name and price
-                      Text(
-                        "Price: ${imageUrls[index].itemPrice}", // Product price
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      SizedBox(height: 4), // Add some space between price and description
-                      Text(
-                        imageUrls[index].description, // Product description
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }
