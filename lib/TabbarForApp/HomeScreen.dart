@@ -163,10 +163,60 @@ Future<ApiResponse?> getHomeData() async {
 }
 
 
+Widget drawerCustom(BuildContext context) {
+    return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Home'),
+              onTap: () {
+                // Handle navigation to home screen
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Handle navigation to settings screen
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text('About'),
+              onTap: () {
+                // Handle navigation to about screen
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Center(
+        child: Text('Main Content'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
   return Scaffold(
+    appBar: AppBar(
+        title: Text('Side Menu'),
+      ),
     backgroundColor: Colors.black,
     body: ListView(
       children: [
@@ -175,6 +225,11 @@ Future<ApiResponse?> getHomeData() async {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
            children: [
+            Image.asset("",
+                    height: 190,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+            ),
             Row(
                   children: [
                    Text(
