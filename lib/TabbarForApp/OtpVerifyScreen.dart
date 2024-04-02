@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_134/TabbarForApp/AppLoader.dart';
 import 'package:flutter_application_134/TabbarForApp/LoginController.dart';
 import 'package:flutter_application_134/TabbarForApp/LoginScreen.dart';
+import 'package:flutter_application_134/TabbarForApp/SessionManager.dart';
 import 'package:flutter_application_134/TabbarForApp/TabbarViewCustom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -387,9 +389,10 @@ try {
   final response = await loginController.verifyOtp(widget.mobileNumber,enteredOtp);
 
      if (response["status"] == 200){
+       String tokenForApi = response['data']['token'];
+        SessionManager.saveToken(tokenForApi);
+        SessionManager.isLoginSave(true as Bool);
         navigateToOtpScreen(context);
-     String tokenForApi = response['data']['token'];
-       saveToken(tokenForApi);
      }else{
       String message = "verify otp failed used valid otp";
       MyDialogUtils.showDialogBox(context, message);
@@ -409,10 +412,7 @@ try {
 
      
   }
-  Future<void> saveToken(String token) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString('token', token);
-}
+ 
 
   void navigateToOtpScreen(BuildContext context) {
     Navigator.of(context)

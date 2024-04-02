@@ -1,8 +1,13 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_134/TabbarForApp/AboutUsScreen.dart';
 import 'package:flutter_application_134/TabbarForApp/LoginController.dart';
+import 'package:flutter_application_134/TabbarForApp/PrivacyPolicyScreen.dart';
+import 'package:flutter_application_134/TabbarForApp/SessionManager.dart';
+import 'package:flutter_application_134/TabbarForApp/TermsAndConditionScreen.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,8 +38,8 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
      //getHomeData();
-       verifyOtp();
-     _fetchLocation();
+      // verifyOtp();
+    // _fetchLocation();
   }
 
  Future<void> _fetchLocation() async {
@@ -98,7 +103,7 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
 
        if (datat.length >= 3) {
            setState(() {
-        banners = datat.sublist(0, 3); // Extract the first three models
+        banners = datat.sublist(3, 6); // Extract the first three models
          });
       } else {
            setState(() {
@@ -162,60 +167,16 @@ Future<ApiResponse?> getHomeData() async {
   }
 }
 
-
-Widget drawerCustom(BuildContext context) {
-    return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-              onTap: () {
-                // Handle navigation to home screen
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-              onTap: () {
-                // Handle navigation to settings screen
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('About'),
-              onTap: () {
-                // Handle navigation to about screen
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Center(
-        child: Text('Main Content'),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
   return Scaffold(
-    appBar: AppBar(
-        title: Text('Side Menu'),
+     drawer: NavDrawer(),
+     drawerScrimColor: Colors.black.withOpacity(0.5),
+      appBar: AppBar(
+        title:  Text(
+                    'Bringin-',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)
+                ),
       ),
     backgroundColor: Colors.black,
     body: ListView(
@@ -225,11 +186,6 @@ Widget drawerCustom(BuildContext context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
            children: [
-            Image.asset("",
-                    height: 190,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-            ),
             Row(
                   children: [
                    Text(
@@ -239,12 +195,12 @@ Widget drawerCustom(BuildContext context) {
                   SizedBox(width: 8),
                     Text(
                     '$state, ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.white)
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.blue)
                 ),
           
               Text(
                     '$city',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200, color: Colors.white)
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200, color: Colors.blue)
                 ),
               SizedBox(width: 8),
                   ],
@@ -278,7 +234,7 @@ Widget gridViewForNew() {
    return GridView.builder(
      physics: NeverScrollableScrollPhysics(),
      shrinkWrap: true,
-     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 250,),
+     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 260,),
      itemCount: datat.length, itemBuilder: (BuildContext context, int index) { 
       return Container(
         decoration: BoxDecoration(
@@ -308,8 +264,11 @@ Widget gridViewForNew() {
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                              color: Colors.white,
+                          
                              
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                ),
                 Padding(
@@ -440,12 +399,7 @@ class _BannerCellState extends State<BannerCell> {
 }
 
 
-
 }
-
-
-
-
 
 
 
@@ -557,6 +511,82 @@ class Products {
       imageUrl: json['image_url'] ?? '',
       muxAssetId: json['mux_assest_id'],
       muxLivestreamId: json['mux_livestream_id'],
+    );
+  }
+}
+
+
+
+
+class NavDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            child: Text(
+              'Bringin',
+              style: TextStyle(color: Colors.black, fontSize: 25),
+            ),
+            decoration: BoxDecoration(
+                color: Colors.green,
+                image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage('images/loginback.png'),
+                  
+                    )),
+          ),
+          ListTile(
+            leading: Icon(Icons.input),
+            title: Text('Menu'),
+            onTap: () => {
+             Navigator.of(context).pop()
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.verified_user),
+            
+            title: Text('Privacy Policy'),
+            onTap: () => {  Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PrivacyPolicyScreen()),
+            )},
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Terms & Conditions'),
+            onTap: () => {
+              Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TermsAndConditionScreen()),
+            )
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.border_color),
+            title: Text('About Us'),
+            onTap: () => {
+              Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AboutUsScreen()),
+            )
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('Logout'),
+            onTap: () => {
+              SessionManager.isLoginSave(false as Bool),
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+            ),
+              },
+          ),
+        ],
+      ),
     );
   }
 }

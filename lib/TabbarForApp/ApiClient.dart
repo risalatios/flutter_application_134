@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_application_134/TabbarForApp/SessionManager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
@@ -18,10 +19,8 @@ class ApiClient {
   }
 
   Future<Response> postWithToken(String url, dynamic data) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var token = prefs.getString('token');
-  print("token: $token");
-  
+   var token = SessionManager.getToken();
+   print("token: $token");
   return await dio.post(
     url,
     data: data,
