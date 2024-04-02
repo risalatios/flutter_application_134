@@ -38,8 +38,8 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
      //getHomeData();
-      // verifyOtp();
-    // _fetchLocation();
+       verifyOtp();
+     _fetchLocation();
   }
 
  Future<void> _fetchLocation() async {
@@ -578,7 +578,7 @@ class NavDrawer extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () => {
-              SessionManager.isLoginSave(false as Bool),
+              SessionManager.isLoginSave("false"),
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => LoginScreen()),

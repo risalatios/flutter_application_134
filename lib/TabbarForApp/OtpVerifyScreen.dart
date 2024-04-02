@@ -383,6 +383,18 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
     );
   }
 
+
+void saveIsLogin() async {
+    String isLogin = 'true'; // or 'false' based on your login status
+    await SessionManager.isLoginSave(isLogin);
+    print('Login status saved');
+}
+
+ void saveToken(String token) async {
+    await SessionManager.saveToken(token);
+    print('Token saved');
+  }
+
   void verifyOtp()async{
       print("fvdffdv ${widget.mobileNumber}");
 try {
@@ -390,8 +402,8 @@ try {
 
      if (response["status"] == 200){
        String tokenForApi = response['data']['token'];
-        SessionManager.saveToken(tokenForApi);
-        SessionManager.isLoginSave(true as Bool);
+       saveToken(tokenForApi);
+       saveIsLogin();
         navigateToOtpScreen(context);
      }else{
       String message = "verify otp failed used valid otp";

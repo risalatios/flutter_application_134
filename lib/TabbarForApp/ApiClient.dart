@@ -19,7 +19,7 @@ class ApiClient {
   }
 
   Future<Response> postWithToken(String url, dynamic data) async {
-   var token = SessionManager.getToken();
+  String? token = await SessionManager.getToken();
    print("token: $token");
   return await dio.post(
     url,

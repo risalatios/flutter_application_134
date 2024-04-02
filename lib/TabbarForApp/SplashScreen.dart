@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_134/TabbarForApp/LoginPhoneScreen.dart';
+import 'package:flutter_application_134/TabbarForApp/SessionManager.dart';
+import 'package:flutter_application_134/TabbarForApp/TabbarViewCustom.dart';
 import 'LoginScreen.dart'; 
 
 class SplashScreen extends StatefulWidget {
@@ -9,15 +11,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+   var isLogin = SessionManager.getLoginStatus();
   @override
   void initState() {
     super.initState();
     // Delay navigation to the next screen
-    Timer(Duration(seconds: 3), () {
-     Navigator.push(
+    Timer(Duration(seconds: 3), () async {
+       String? isLogin = await SessionManager.getLoginStatus();
+      print("ffdcfdcdfsc $isLogin");
+     if (isLogin == "true"){
+        Navigator.push(
+    context,
+      MaterialPageRoute(builder: (context) => TabbarViewCustom()),
+     );
+     }else{
+       Navigator.push(
     context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
      );
+     }
+    
     });
   }
 

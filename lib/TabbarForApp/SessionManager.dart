@@ -14,14 +14,14 @@ class SessionManager {
     return prefs.getString('token');
   }
 
-   static Future<void> isLoginSave(Bool isLogin) async {
+   static Future<void> isLoginSave(String isLogin) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLogin', isLogin as bool);
+     prefs.setString('isLogin', isLogin);
    }
 
-    static Future<bool?> getLoginStatus() async {
+    static Future<String?> getLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isLogin');
+    return prefs.getString('isLogin');
   }
 
 
