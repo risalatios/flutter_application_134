@@ -35,7 +35,7 @@ class HomeScreenState extends State<HomeScreen> {
  String? city;
  String? homeAddress;
  Object? get boutiques => null;
-
+bool _isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -94,7 +94,9 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
 
   
    void verifyOtp()async{
-     print("calledd,");
+     setState(() {
+    _isLoading = true; // Show loader when API call starts
+  });
     final response = await loginController.getHomeData();
      if (response["status"] == 200){
         //final Map<String, dynamic> responseData = jsonDecode(response);
@@ -119,7 +121,11 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
       String message = "verify otp failed used valid otp";
       MyDialogUtils.showDialogBox(context, message);
      }
+      setState(() {
+    _isLoading = false; // Hide loader when API call finishes
+  });
      print(response);
+
      
   }
 
@@ -170,6 +176,14 @@ Future<ApiResponse?> getHomeData() async {
     print('Error: $e');
     return null;
   }
+}
+
+Widget _buildLoader() {
+  return _isLoading
+      ? Center(
+          child: CircularProgressIndicator(),
+        )
+      : SizedBox.shrink();
 }
 
   @override
@@ -227,6 +241,7 @@ Future<ApiResponse?> getHomeData() async {
                padding: const EdgeInsets.all(6.0),
                child: gridViewForNew(),
              ),
+               _buildLoader(),
               ],
           ),
         ),
@@ -381,7 +396,7 @@ class _BannerCellState extends State<BannerCell> {
   }
 
   @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
   double screenWidth = MediaQuery.of(context).size.width;
   return SizedBox(
     height: 180,
@@ -395,23 +410,11 @@ class _BannerCellState extends State<BannerCell> {
           return Row(
             children: [
               Container(
-                  height: 180, // Adjust height as needed
-                  width: screenWidth - 16,
+                height: 180, // Adjust height as needed
+                width: screenWidth - 16,
                 child: Image.network(
                   widget.bannerArrays[index].imageUrl,
                   fit: BoxFit.fill,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
                 ),
               ),
               SizedBox(width: 12),
@@ -425,6 +428,7 @@ class _BannerCellState extends State<BannerCell> {
     ),
   );
 }
+
 
 }
 
