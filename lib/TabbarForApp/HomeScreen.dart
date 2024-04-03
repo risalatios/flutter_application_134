@@ -41,6 +41,7 @@ class HomeScreenState extends State<HomeScreen> {
        verifyOtp();
      _fetchLocation();
   }
+  
 
  Future<void> _fetchLocation() async {
     try {
@@ -234,7 +235,7 @@ Widget gridViewForNew() {
    return GridView.builder(
      physics: NeverScrollableScrollPhysics(),
      shrinkWrap: true,
-     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 260,),
+     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 310,),
      itemCount: datat.length, itemBuilder: (BuildContext context, int index) { 
       return Container(
         decoration: BoxDecoration(
@@ -268,7 +269,6 @@ Widget gridViewForNew() {
                              
                           ),
                           maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                ),
                 Padding(
@@ -286,9 +286,22 @@ Widget gridViewForNew() {
                           "Price: ${datat[index].itemPrice}", // Product price
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w400,
                             color: Colors.white,
                           ),
+                        ),
+                      ),
+
+                       Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Text(
+                          "Description: ${datat[index].description}", // Product price
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.white,
+                          ),
+                          maxLines: 2,
                         ),
                       ),
                  
