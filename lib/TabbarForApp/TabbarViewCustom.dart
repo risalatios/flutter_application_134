@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_134/TabbarForApp/HomeScreen.dart';
+import 'package:flutter_application_134/TabbarForApp/ProfileScreen.dart';
 
 class TabbarViewCustom extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class _MyHomePageState extends State<TabbarViewCustom> {
     Page2(),
     Page3(),
     Page4(),
-    Page5(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -53,7 +54,7 @@ Widget build(BuildContext context) {
         BottomNavigationBarItem(
            icon: Image.asset('images/accountoff.png', width: 24, height: 24),
           activeIcon: Image.asset('images/accounton.png', width: 24, height: 24),
-          label: 'ACCOUNT',
+          label: 'Profile',
         ),
       ],
       currentIndex: _selectedIndex,
@@ -95,15 +96,6 @@ class Page4 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text('Stores screen'),
-    );
-  }
-}
-
-class Page5 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Account screen'),
     );
   }
 }
