@@ -19,7 +19,7 @@ class LoginController{
 
   Future<Map<String, dynamic>> getHomeData() async {
   final requestData = {
-    'limit': 60,
+    'limit': 100,
     'offset': 0,
     'title': "Latest Products",
     'filter_ids': {}, 

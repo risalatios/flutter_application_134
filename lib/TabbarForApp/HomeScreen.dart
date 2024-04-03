@@ -42,6 +42,7 @@ class HomeScreenState extends State<HomeScreen> {
      //getHomeData();
        verifyOtp();
      _fetchLocation();
+     print("calledd,");
   }
   
 
@@ -93,6 +94,7 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
 
   
    void verifyOtp()async{
+     print("calledd,");
     final response = await loginController.getHomeData();
      if (response["status"] == 200){
         //final Map<String, dynamic> responseData = jsonDecode(response);
@@ -100,7 +102,7 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
           print("hello");
         print(apiResponse.dataList[2].imageUrl);
         setState(() {
-           List<Products> last10Items = getLastNItemsFromModelList(apiResponse.dataList, 10);
+           List<Products> last10Items = getLastNItemsFromModelList(apiResponse.dataList, 50);
          datat = last10Items;
         });
 
@@ -424,7 +426,6 @@ class _BannerCellState extends State<BannerCell> {
   );
 }
 
-
 }
 
 
@@ -452,91 +453,28 @@ class ApiResponse {
   }
 }
 
-
-
-
 class Products {
-  final int id;
-  final int parentItemId;
-  final String boutiqueId;
   final String itemName;
   final String description;
   final String itemMainPic;
   final double itemPrice;
-  final String fit;
-  final String sku;
-  final bool isCustomisable;
-  final String? care;
-  final String? colour;
-  final String butqName;
-  final String profilePic;
-  final String coverPic;
-  final String butqDescription;
-  final String email;
-  final String phone;
-  final int isActive;
-  final double? locationLat;
-  final double? locationLong;
-  final String ownerId;
   final String imageUrl;
-  final String? muxAssetId;
-  final String? muxLivestreamId;
 
   Products({
-    required this.id,
-    required this.parentItemId,
-    required this.boutiqueId,
     required this.itemName,
     required this.description,
     required this.itemMainPic,
     required this.itemPrice,
-    required this.fit,
-    required this.sku,
-    required this.isCustomisable,
-    this.care,
-    this.colour,
-    required this.butqName,
-    required this.profilePic,
-    required this.coverPic,
-    required this.butqDescription,
-    required this.email,
-    required this.phone,
-    required this.isActive,
-    this.locationLat,
-    this.locationLong,
-    required this.ownerId,
     required this.imageUrl,
-    this.muxAssetId,
-    this.muxLivestreamId,
   });
 
   factory Products.fromJson(Map<String, dynamic> json) {
     return Products(
-      id: json['id'] ?? 0,
-      parentItemId: json['parent_item_id'] ?? 0,
-      boutiqueId: json['boutique_id'] ?? '',
       itemName: json['item_name'] ?? '',
       description: json['description'] ?? '',
       itemMainPic: json['item_main_pic'] ?? '',
       itemPrice: (json['item_price'] ?? 0.0).toDouble(),
-      fit: json['fit'] ?? '',
-      sku: json['sku'] ?? '',
-      isCustomisable: json['is_customisable'] ?? false,
-      care: json['care'],
-      colour: json['colour'],
-      butqName: json['butq_name'] ?? '',
-      profilePic: json['profile_pic'] ?? '',
-      coverPic: json['cover_pic'] ?? '',
-      butqDescription: json['butq_description'] ?? '',
-      email: json['email'] ?? '',
-      phone: json['phone'] ?? '',
-      isActive: json['is_active'] ?? 0,
-      locationLat: (json['location_lat'] ?? 0.0).toDouble(),
-      locationLong: (json['location_long'] ?? 0.0).toDouble(),
-      ownerId: json['owner_id'] ?? '',
       imageUrl: json['image_url'] ?? '',
-      muxAssetId: json['mux_assest_id'],
-      muxLivestreamId: json['mux_livestream_id'],
     );
   }
 }
