@@ -62,15 +62,15 @@ bool _isLoading = false;
       setState(() {
      
     if (placemarks.isNotEmpty) {
-    state = placemarks.first.administrativeArea ?? 'Unknown';
-    city = placemarks.first.locality ?? 'Unknown';
+    state = placemarks.first.administrativeArea ?? 'Fetching...';
+    city = placemarks.first.locality ?? '';
      var first = placemarks.first;
       var s =' ${first.locality}, ${first.administrativeArea},${first.subLocality}, ${first.subAdministrativeArea},${first.thoroughfare}, ${first.subThoroughfare}';
     homeAddress = s;
   
    } else {
-  state = 'Unknown';
-  city = 'Unknown';
+  state = 'Fetching..';
+  city = '';
   }
 
       });
@@ -117,9 +117,6 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
           banners = datat; // If there are less than three models, use the entire list
             });
       }
-     }else{
-      String message = "verify otp failed used valid otp";
-      MyDialogUtils.showDialogBox(context, message);
      }
       setState(() {
     _isLoading = false; // Hide loader when API call finishes
@@ -254,7 +251,7 @@ Widget gridViewForNew() {
    return GridView.builder(
      physics: NeverScrollableScrollPhysics(),
      shrinkWrap: true,
-     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 310,),
+     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 320,),
      itemCount: datat.length, itemBuilder: (BuildContext context, int index) { 
        return GestureDetector(
             onTap: () {
@@ -318,6 +315,7 @@ Widget gridViewForNew() {
                             fontWeight: FontWeight.w400,
                             color: Colors.white,
                           ),
+                          maxLines: 1,
                         ),
                       ),
 
