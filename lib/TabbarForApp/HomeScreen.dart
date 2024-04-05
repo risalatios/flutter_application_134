@@ -132,7 +132,6 @@ for (var post in posts) {
      
   }
 }
-
 return postWidgets;
 }
 
@@ -147,6 +146,7 @@ return postWidgets;
         'Bringin-',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
       ),
+       iconTheme: IconThemeData(color: Colors.white),
     ),
     backgroundColor: Colors.black,
     body: ListView(
