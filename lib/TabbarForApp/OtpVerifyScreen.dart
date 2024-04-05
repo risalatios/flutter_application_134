@@ -30,6 +30,8 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
   String mobileNumber = '';
   late Timer _timer;
   int _start = 70;
+  
+  FocusNode? previousFocusNode;
    
 
 
@@ -264,21 +266,39 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
   }
 
   // otp input field
-  Widget _getOtpInputField(BuildContext context, int length) {
+    Widget _getOtpInputField(BuildContext context, int length) {
     final List<Widget> inputFields = [];
     for (int i = 0; i < length; i++) {
       controllers.add(TextEditingController());
       focusNodes.add(FocusNode());
-      inputFields.add(_getInputField(controllers[i], focusNodes[i], (text) {
-        if (i < length - 1) {
-          FocusScope.of(context).requestFocus(focusNodes[i + 1]);
-        } else {
-          enteredOtp = '';
-          for (var element in controllers) {
-            enteredOtp = enteredOtp + element.text;
+      inputFields.add(_getInputField(
+        controllers[i],
+        focusNodes[i],
+        (text) {
+          if (text.isEmpty) {
+            // If the user deleted the text, move focus to the previous field
+            controllers[i].clear();
+            if (i > 0) {
+              FocusScope.of(context).requestFocus(focusNodes[i - 1]);
+            }
+          } else {
+            if (i < length - 1) {
+              FocusScope.of(context).requestFocus(focusNodes[i + 1]);
+            } else {
+              enteredOtp = '';
+              for (var element in controllers) {
+                enteredOtp = enteredOtp + element.text;
+              }
+              // Handle entered OTP here
+            }
           }
-        }
-      }));
+        },
+      ));
+      // Update previous focus node
+      if (i > 0) {
+        // previousFocusNode = focusNodes[i - 1];
+        previousFocusNode = focusNodes[i - 1];
+      }
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

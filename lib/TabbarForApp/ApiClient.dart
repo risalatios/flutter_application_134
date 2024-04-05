@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_application_134/TabbarForApp/SessionManager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   late final Dio dio;
 
   ApiClient() {
     dio = Dio();
+   
   }
 
   Future<Response> get(String url) async {
@@ -24,6 +24,18 @@ class ApiClient {
   return await dio.post(
     url,
     data: data,
+    options: Options(headers: {
+      'TOKEN': '$token', // Add the token to the headers
+      'Content-Type': 'application/json', // Example content type, adjust as needed
+    }),
+  );
+}
+
+Future<Response> postHomeDataNew(String url) async {
+  String? token = await SessionManager.getToken();
+   print("token: $token");
+  return await dio.post(
+    url,
     options: Options(headers: {
       'TOKEN': '$token', // Add the token to the headers
       'Content-Type': 'application/json', // Example content type, adjust as needed

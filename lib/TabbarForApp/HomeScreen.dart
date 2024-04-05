@@ -6,8 +6,10 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_134/TabbarForApp/AboutUsScreen.dart';
 import 'package:flutter_application_134/TabbarForApp/DetailScreen.dart';
+
 import 'package:flutter_application_134/TabbarForApp/LoginController.dart';
 import 'package:flutter_application_134/TabbarForApp/PrivacyPolicyScreen.dart';
+import 'package:flutter_application_134/TabbarForApp/ProfileScreen.dart';
 import 'package:flutter_application_134/TabbarForApp/SessionManager.dart';
 import 'package:flutter_application_134/TabbarForApp/TermsAndConditionScreen.dart';
 import 'package:geocoding/geocoding.dart';
@@ -30,22 +32,301 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
 
  late List<Products> datat = [];
- late List<Products> banners = [];
+
+ late List<Datum> banners = [];
+ late List<Datum> postProducts = [];
+ late Post? currentPosts;
+
  String? state;
  String? city;
  String? homeAddress;
  Object? get boutiques => null;
 bool _isLoading = false;
+bool isCallApiFirstTime = false;
+
+late List<Post> posts = [];
+
   @override
   void initState() {
     super.initState();
      //getHomeData();
-       verifyOtp();
-     _fetchLocation();
-     print("calledd,");
+     //  verifyOtp();
+     //_fetchLocation();
+    getHomeDataNew();
   }
-  
 
+
+
+  void getHomeDataNew()async{
+     setState(() {
+    _isLoading = true; // Show loader when API call starts
+  });
+    final response = await loginController.getHomeDataNEw();
+     if (response["status"] == 200){
+        final HomeDataApiResponse apiResponse = HomeDataApiResponse.fromJson(response);
+       
+           posts = apiResponse.data?.posts ?? [];
+            if (apiResponse.data != null && apiResponse.data!.posts != null) {
+                posts.forEach((post) {
+             switch (post.datatype ?? "") {
+               case "category":
+               break;
+               case "banner":
+                 setState(() {
+                 banners = post.data ?? [];
+                  });
+            case "boutique":
+            break;
+             case "post":
+               setState(() {
+             postProducts = post.data ?? [];
+              });
+            case "product":
+            break;
+            case "Live Stream":
+            break;
+            default:
+           break;
+  }
+});
+} 
+     }
+
+      setState(() {
+    _isLoading = false; // Hide loader when API call finishes
+  });
+  
+  }
+
+  List<Widget> addWigit(){
+  List<Widget> postWidgets = [];
+
+for (var post in posts) {
+  if (post.datatype! == "category") {
+   
+  } else if (post.datatype! == "banner") {
+    postWidgets.add(
+      Column(
+        children: [
+          const SizedBox(height: 8),
+          BannerCell(banners),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  } else if (post.datatype! == "boutique") {
+  
+  } else if (post.datatype! == "post") {
+    postWidgets.add(
+      Column(
+        children: [
+          const SizedBox(height: 8),
+          postView(post.title!, post.data!),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  } else if (post.datatype! == "product") {
+   
+  } else if (post.datatype! == "Live Stream") {
+     
+  }
+}
+
+return postWidgets;
+}
+
+  @override
+  Widget build(BuildContext context) {
+  return Scaffold(
+    drawer: NavDrawer(),
+    drawerScrimColor: Colors.black.withOpacity(0.5),
+    appBar: AppBar(
+      backgroundColor: Colors.black,
+      title: Text(
+        'Bringin-',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    ),
+    backgroundColor: Colors.black,
+    body: ListView(
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+          if (posts != [])
+         Column(
+        children:
+         addWigit(),
+  ),
+       ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+Widget postView(String title, List<Datum> data) {
+    return Container(
+       height: 380,
+     child: Column(
+         children: [
+           Row(
+  children: [
+    Expanded(
+      child: Divider(
+        height: 1,
+        color: Colors.grey,
+      ),
+    ),
+     SizedBox(width: 8.0),
+      Center(
+        child: Text(
+          title,
+          style: TextStyle(fontSize: 16.0, color: Colors.white),
+          maxLines: 1,
+        ),
+      ),
+    SizedBox(width: 8.0),
+    Expanded(
+      child: Divider(
+        height: 1,
+        color: Colors.grey,
+      ),
+    ),
+  ],
+),
+
+          SizedBox(height: 12.0),
+         postGridView(data),
+            SizedBox(height: 8.0),
+              Center(
+  child: SizedBox(
+    width: MediaQuery.of(context).size.width - 16, 
+    child: TextButton(
+      onPressed: () {
+     
+      },
+      child: Text('VIEW ALL'),
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.white, shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0), 
+          side: BorderSide(color: Colors.grey), 
+        ),
+      ),
+    ),
+  ),
+),
+
+
+         ],
+
+     ),
+    );
+  }
+
+Widget postGridView(List<Datum> data) {
+   return SizedBox(
+     height: 280,
+     child: GridView.builder(
+       shrinkWrap: true,
+       scrollDirection: Axis.horizontal,
+       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1, crossAxisSpacing: 22, mainAxisSpacing: 22, mainAxisExtent: 140),
+       itemCount: data.length, itemBuilder: (BuildContext context, int index) { 
+        String boutiqueName = data[index].boutiqueName ?? "";
+        String capitalizedText = boutiqueName.split('').map((char) => char.toUpperCase()).join('');
+         return GestureDetector(
+              onTap: () {
+        //        Navigator.of(context).push(
+        //      CupertinoPageRoute(
+        //           fullscreenDialog: true,
+        //           builder: (context) => DetailScreen(item: datat[index]),
+                  
+        //   ),
+        // );
+       },    
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    child: Image.network(data[index].thumbnail!.isNotEmpty
+                            ? data[index].thumbnail!
+                            : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdh87wRxK1XDWDjCCHi1BHgjkM0wzDRC89bHdndVxgHouG0QGSK_VAKir9rdQNVNm0poA&usqp=CAU",
+                          height: 180,
+                          width: 140,
+                          fit: BoxFit.cover,
+                            ),       
+                  ),
+                  SizedBox(height: 4,),
+                   Container(
+                          width: 140,
+                           child: Text(
+                                  "7 days ago", // Product price
+                                  style: TextStyle(fontSize: 13.0, color: Colors.grey),
+                                  maxLines: 1,
+                                ),
+                         ),
+                          SizedBox(height: 4,),
+                    Container(
+                      width: 150,
+                      child: Text(data[index].title ?? "", // Product name
+                                  style: TextStyle(fontSize: 14.0, color: Colors.white),
+                                  maxLines: 2,
+                                ),
+                    ),
+                     SizedBox(height: 4,),
+                     Container( height: 1, 
+                                      width: 24,
+                                     color: Colors.green,
+                             ),
+                                        SizedBox(height: 4,),
+                           
+                         Container(
+                          width: 140,
+                           child: Text(
+                                  capitalizedText, // Product price
+                                  style: TextStyle(fontSize: 13.0, color: Colors.grey),
+                                  maxLines: 1,
+                                ),
+                         ),
+                
+                ],
+                
+              ),
+            ),
+          ],
+           
+        ),
+        
+         );
+         
+        },
+        
+     ),
+     
+   );
+  }
+
+
+
+
+
+
+
+
+
+  
  Future<void> _fetchLocation() async {
     try {
       // Get the current position (latitude and longitude)
@@ -110,11 +391,11 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
 
        if (datat.length >= 3) {
            setState(() {
-        banners = datat.sublist(3, 6); // Extract the first three models
+        //banners = datat.sublist(3, 6); // Extract the first three models
          });
       } else {
            setState(() {
-          banners = datat; // If there are less than three models, use the entire list
+         // banners = datat; // If there are less than three models, use the entire list
             });
       }
      }
@@ -125,6 +406,9 @@ List<Products> getLastNItemsFromModelList(List<Products> list, int n) {
 
      
   }
+
+  
+
 
 Future<ApiResponse?> getHomeData() async {
   final String apiUrl = 'http://165.232.191.15/api/v1/bazaar/homepage/dynamic/';
@@ -157,11 +441,11 @@ Future<ApiResponse?> getHomeData() async {
 
        if (datat.length >= 3) {
            setState(() {
-        banners = datat.sublist(0, 3); // Extract the first three models
+       // banners = datat.sublist(0, 3); // Extract the first three models
          });
       } else {
            setState(() {
-          banners = datat; // If there are less than three models, use the entire list
+          //banners = datat; // If there are less than three models, use the entire list
             });
       }
     } else {
@@ -183,69 +467,8 @@ Widget _buildLoader() {
       : SizedBox.shrink();
 }
 
-  @override
-  Widget build(BuildContext context) {
-  return Scaffold(
-     drawer: NavDrawer(),
-     drawerScrimColor: Colors.black.withOpacity(0.5),
-      appBar: AppBar(
-        title:  Text(
-                    'Bringin-',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)
-                ),
-      ),
-    backgroundColor: Colors.black,
-    body: ListView(
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-           children: [
-            Row(
-                  children: [
-                   Text(
-                    'Location-',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200, color: Colors.white)
-                ),
-                  SizedBox(width: 8),
-                    Text(
-                    '$state, ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.blue)
-                ),
-          
-              Text(
-                    '$city',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w200, color: Colors.blue)
-                ),
-              SizedBox(width: 8),
-                  ],
-            ),
-          
-             Text(
-                    'Bringin Banners',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white)
-                ),
-                  SizedBox(height: 8),
-                  BannerCell(banners),
-                 SizedBox(height: 8),
-                Text(
-                    'Bringin Products',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white)
-                ),
-                  SizedBox(height: 8),
-             Padding(
-               padding: const EdgeInsets.all(6.0),
-               child: gridViewForNew(),
-             ),
-               _buildLoader(),
-              ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+  
+
 
 Widget gridViewForNew() {
    return GridView.builder(
@@ -348,7 +571,7 @@ Widget gridViewForNew() {
 
 //
 class BannerCell extends StatefulWidget {
-  final List<Products> bannerArrays;
+  final List<Datum> bannerArrays;
   BannerCell(this.bannerArrays);
   
   @override
@@ -387,41 +610,38 @@ class _BannerCellState extends State<BannerCell> {
 
   void _scrollToIndex(int index) {
     _scrollController.animateTo(
-      index * MediaQuery.of(context).size.width - 16,
+      index * MediaQuery.of(context).size.width,
       duration: Duration(seconds: 1),
       curve: Curves.easeInOut,
     );
   }
 
-  @override
+
+@override
 Widget build(BuildContext context) {
-  double screenWidth = MediaQuery.of(context).size.width;
+  double screenWidth = MediaQuery.of(context).size.width - 16;
   return SizedBox(
-    height: 180,
+    height: 190,
     child: ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: widget.bannerArrays.length,
       controller: _scrollController,
       itemBuilder: (context, index) {
         // Check if imageUrl is not empty
-        if (widget.bannerArrays[index].imageUrl.isNotEmpty) {
           return Row(
             children: [
               Container(
-                height: 180, // Adjust height as needed
-                width: screenWidth - 16,
+                height: 190, // Adjust height as needed
+                width: screenWidth,
                 child: Image.network(
-                  widget.bannerArrays[index].imageUrl,
-                  fit: BoxFit.fill,
+                  widget.bannerArrays[index].bannerUrl!,
+                  fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(width: 12),
+              SizedBox(width: 16),
             ],
           );
-        } else {
-          // If imageUrl is empty, return an empty SizedBox
-          return SizedBox();
-        }
+        
       },
     ),
   );
@@ -431,6 +651,12 @@ Widget build(BuildContext context) {
 }
 
 
+    // case category = "category"
+    // case banner = "banner"
+    // case boutique = "boutique"
+    // case post = "post"
+    // case product = "product"
+    // case liveBoutique = "Live Stream"
 
 
 class ApiResponse {
@@ -455,16 +681,218 @@ class ApiResponse {
   }
 }
 
+
+class HomeDataApiResponse {
+  final Data? data;
+  final int? status;
+  final String? msg;
+
+  HomeDataApiResponse({
+    this.data,
+    this.status,
+    this.msg,
+  });
+
+  factory HomeDataApiResponse.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return HomeDataApiResponse(data: null, status: null, msg: null);
+    }
+    return HomeDataApiResponse(
+      data: Data.fromJson(json['data']),
+      status: json['status'],
+      msg: json['msg'],
+    );
+  }
+}
+
+class Data {
+  final bool? success;
+  final String? summary;
+  final List<Post>? posts;
+
+  Data({
+    this.success,
+    this.summary,
+    this.posts,
+  });
+
+  factory Data.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Data(success: null, summary: null, posts: null);
+    }
+    return Data(
+      success: json['success'],
+      summary: json['summary'],
+      posts: (json['data'] as List<dynamic>?)
+          ?.map((postJson) => Post.fromJson(postJson))
+          .toList(),
+    );
+  }
+}
+
+class Post {
+  final String? title;
+  final String? datatype;
+  final List<Datum>? data;
+
+  Post({
+    this.title,
+    this.datatype,
+    this.data,
+  });
+
+  factory Post.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Post(title: null, datatype: null, data: null);
+    }
+    return Post(
+      title: json['title'],
+      datatype: json['datatype'],
+      data: (json['data'] as List<dynamic>?)
+          ?.map((datumJson) => Datum.fromJson(datumJson))
+          .toList(),
+    );
+  }
+}
+
+class Datum {
+  final String? title;
+  final String? description;
+  final String? thumbnail;
+  final String? boutiqueName;
+  final String? email;
+  final String? profilePic;
+  final String? coverPic;
+  final Address? address;
+  final List<Products>? products;
+
+  //banner
+  final int? id;
+  final String? category;
+  final int? categoryId;
+  final DateTime? validFrom;
+  final DateTime? validTo;
+  final DateTime? createdAt;
+  final String? bannerUrl;
+  final String? bannerType;
+  //
+
+  Datum({
+    this.title,
+    this.description,
+    this.thumbnail,
+    this.boutiqueName,
+    this.email,
+    this.profilePic,
+    this.coverPic,
+    this.address,
+    this.products,
+
+    //banner
+    this.id,
+    this.category,
+    this.categoryId,
+    this.validFrom,
+    this.validTo,
+    this.createdAt,
+    this.bannerUrl,
+    this.bannerType,
+    //
+  });
+
+  factory Datum.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Datum(
+        title: null,
+        description: null,
+        thumbnail: null,
+        boutiqueName: null,
+        email: null,
+        profilePic: null,
+        coverPic: null,
+        address: null,
+        products: null,
+
+        //banner
+        id: null,
+        category: null,
+        categoryId: null,
+        validFrom: null,
+        validTo: null,
+        createdAt: null,
+        bannerUrl: null,
+        bannerType: null,
+      );
+    }
+    return Datum(
+      title: json['title'],
+      description: json['description'],
+      thumbnail: json['thumbnail'],
+      boutiqueName: json['boutique_name'],
+      email: json['email'],
+      profilePic: json['profile_pic'],
+      coverPic: json['cover_pic'],
+      address: Address.fromJson(json['address']),
+      products: (json['products'] as List<dynamic>?)
+          ?.map((productJson) => Products.fromJson(productJson))
+          .toList(),
+
+      //banner
+      id: json['id'],
+      category: json['category'],
+      categoryId: json['category_id'],
+      validFrom: json['valid_from'] != null ? DateTime.parse(json['valid_from']) : null,
+      validTo: json['valid_to'] != null ? DateTime.parse(json['valid_to']) : null,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      bannerUrl: json['banner_url'],
+      bannerType: json['banner_type'],
+      //
+    );
+  }
+}
+
+class Address {
+  final String? city;
+  final String? state;
+  final String? line1;
+  final String? line2;
+  final String? pincode;
+  final String? landmark;
+
+  Address({
+    this.city,
+    this.state,
+    this.line1,
+    this.line2,
+    this.pincode,
+    this.landmark,
+  });
+
+  factory Address.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Address(city: null, state: null, line1: null, line2: null, pincode: null, landmark: null);
+    }
+    return Address(
+      city: json['city'],
+      state: json['state'],
+      line1: json['line_1'],
+      line2: json['line_2'],
+      pincode: json['pincode'],
+      landmark: json['landmark'],
+    );
+  }
+}
+
 class Products {
   final String itemName;
-  final String description;
+  final String? description;
   final String itemMainPic;
   final double itemPrice;
   final String imageUrl;
 
   Products({
     required this.itemName,
-    required this.description,
+    this.description,
     required this.itemMainPic,
     required this.itemPrice,
     required this.imageUrl,
@@ -473,117 +901,10 @@ class Products {
   factory Products.fromJson(Map<String, dynamic> json) {
     return Products(
       itemName: json['item_name'] ?? '',
-      description: json['description'] ?? '',
+      description: json['description'],
       itemMainPic: json['item_main_pic'] ?? '',
       itemPrice: (json['item_price'] ?? 0.0).toDouble(),
       imageUrl: json['image_url'] ?? '',
     );
   }
-}
-
-
-
-
-class NavDrawer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Text(
-              'Bringin',
-              style: TextStyle(color: Colors.black, fontSize: 25),
-            ),
-            decoration: BoxDecoration(
-                color: Colors.green,
-                image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage('images/loginback.png'),
-                  
-                    )),
-          ),
-          ListTile(
-            leading: Icon(Icons.input),
-            title: Text('Home'),
-            onTap: () => {
-             Navigator.of(context).pop()
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.verified_user),
-            
-            title: Text('Privacy Policy'),
-            onTap: () => {  Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PrivacyPolicyScreen()),
-            )},
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Terms & Conditions'),
-            onTap: () => {
-              Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TermsAndConditionScreen()),
-            )
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.border_color),
-            title: Text('About Us'),
-            onTap: () => {
-              Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AboutUsScreen()),
-            )
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: () => {
-               showMyAlertDialog(
-              context,
-              "Alert",
-              "Are you sure you want to logout",
-            ),
-              },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-void showMyAlertDialog(BuildContext context, String title, String content) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-            SessionManager.isLoginSave("false");
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-            );
-            },
-            child: Text("YES"),
-          ),
-
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text("NO"),
-          ),
-        ],
-      );
-    },
-  );
 }

@@ -8,12 +8,17 @@ class LoginController{
   final ApiClient apiClient=ApiClient();
 
   Future<Map<String,dynamic>> generateOtp(String phoneNumber)async{
-   final response= await apiClient.post(EndPoints.BaseUrl+EndPoints.GenerateOtp, {'phone':phoneNumber}) ;
+   final response= await apiClient.post(EndPoints.BaseUrlLive+EndPoints.GenerateOtp, {'phone':phoneNumber}) ;
    return jsonDecode(response.toString());
   }
 
   Future<Map<String,dynamic>> verifyOtp(String phoneNumber,String otp)async{
-    final response= await apiClient.post(EndPoints.BaseUrl+EndPoints.VerifyOtp, {'phone':phoneNumber,'pin':otp,'platform':"ios"});
+    final response= await apiClient.post(EndPoints.BaseUrlLive+EndPoints.VerifyOtp, {'phone':phoneNumber,'pin':otp,'platform':"ios"});
+    return jsonDecode(response.toString());
+  }
+
+  Future<Map<String,dynamic>> getHomeDataNEw()async{
+    final response= await apiClient.postHomeDataNew(EndPoints.BaseUrlLive+EndPoints.GetHomeDataLive);
     return jsonDecode(response.toString());
   }
 

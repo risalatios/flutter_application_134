@@ -22,12 +22,17 @@ class DetailScreen extends StatelessWidget {
                       fit: BoxFit.cover,
                         ),       
                SizedBox(height: 12),
-               Row(
-                 children: [
-                   Text(item.itemName, style: TextStyle(fontSize: 24)),
-                 
-                 ],
-               ),
+             
+               new Container(
+       child: Row(
+         children: <Widget>[
+            Flexible(
+               child: new  Text(item.itemName,style: TextStyle(fontSize: 24),
+               textAlign: TextAlign.left,
+               ),),
+              
+                ],
+        )),
                SizedBox(height: 6),
                Row(
                  children: [
