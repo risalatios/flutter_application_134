@@ -103,7 +103,15 @@ late List<Post> posts = [];
 
 for (var post in posts) {
   if (post.datatype! == "category") {
-   
+   postWidgets.add(
+      Column(
+        children: [
+          const SizedBox(height: 8),
+          catView(post.title!, post.data ?? []),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
   } else if (post.datatype! == "banner") {
     postWidgets.add(
       Column(
@@ -121,12 +129,21 @@ for (var post in posts) {
       Column(
         children: [
           const SizedBox(height: 8),
-          postView(post.title!, post.data!),
+          postView(post.title!, post.data ?? []),
           const SizedBox(height: 8),
         ],
       ),
     );
   } else if (post.datatype! == "product") {
+     postWidgets.add(
+      Column(
+        children: [
+          const SizedBox(height: 8),
+          productView(post.title!, post.data ?? []),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
    
   } else if (post.datatype! == "Live Stream") {
      
@@ -170,6 +187,145 @@ return postWidgets;
 }
 
 
+
+
+Widget productView(String title, List<Datum> data) {
+    return Container(
+       height: 380,
+     child: Column(
+         children: [
+           Row(
+  children: [
+    Expanded(
+      child: Divider(
+        height: 1,
+        color: Colors.grey,
+      ),
+    ),
+     SizedBox(width: 8.0),
+      Center(
+        child: Text(
+          title,
+          style: TextStyle(fontSize: 16.0, color: Colors.white, fontWeight: FontWeight.bold),
+          maxLines: 1,
+        ),
+      ),
+    SizedBox(width: 8.0),
+    Expanded(
+      child: Divider(
+        height: 1,
+        color: Colors.grey,
+      ),
+    ),
+  ],
+),
+
+          SizedBox(height: 12.0),
+         productGridView(data),
+            SizedBox(height: 8.0),
+              Center(
+  child: SizedBox(
+    width: MediaQuery.of(context).size.width - 16, 
+    child: TextButton(
+      onPressed: () {
+     
+      },
+      child: Text('VIEW ALL'),
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.white, shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0), 
+          side: BorderSide(color: Colors.grey), 
+        ),
+      ),
+    ),
+  ),
+),
+
+
+         ],
+
+     ),
+    );
+  }
+
+Widget productGridView(List<Datum> data) {
+   return SizedBox(
+     height: 280,
+     child: GridView.builder(
+       shrinkWrap: true,
+       scrollDirection: Axis.horizontal,
+       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1, crossAxisSpacing: 0, mainAxisSpacing: 22, mainAxisExtent: 140),
+       itemCount: data.length, itemBuilder: (BuildContext context, int index) { 
+         return GestureDetector(
+              onTap: () {
+        //        Navigator.of(context).push(
+        //      CupertinoPageRoute(
+        //           fullscreenDialog: true,
+        //           builder: (context) => DetailScreen(item: datat[index]),
+                  
+        //   ),
+        // );
+       },    
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    child: Image.network(data[index].imageUrl ?? "https://st2.depositphotos.com/1006899/8089/i/450/depositphotos_80897014-stock-photo-page-not-found.jpg",
+                          height: 200,
+                          width: 140,
+                          fit: BoxFit.cover,
+                            ),       
+                  ),
+                  SizedBox(height: 4,),
+                    Container(
+                      width: 150,
+                      child: Text(data[index].itemName ?? "", 
+                                  style: TextStyle(fontSize: 14.0, color: Colors.white, fontWeight: FontWeight.w600),
+                                  maxLines: 2,
+                                ),
+                    ),
+                     SizedBox(height: 4,),
+                     Container( height: 1, 
+                                      width: 24,
+                                     color: Colors.green,
+                             ),
+                                        SizedBox(height: 4,),
+                           
+                         Container(
+                          width: 140,
+                           child: Text(
+  "₹ ${data[index].itemPrice ?? ""}", // Product price with rupee symbol
+  style: TextStyle(fontSize: 14.0, color: Colors.white, fontWeight: FontWeight.bold),
+  maxLines: 1,
+),
+
+                         ),
+                
+                ],
+                
+              ),
+            ),
+          ],
+           
+        ),
+        
+         );
+         
+        },
+        
+     ),
+     
+   );
+  }
+
+
 Widget postView(String title, List<Datum> data) {
     return Container(
        height: 380,
@@ -187,7 +343,7 @@ Widget postView(String title, List<Datum> data) {
       Center(
         child: Text(
           title,
-          style: TextStyle(fontSize: 16.0, color: Colors.white),
+          style: TextStyle(fontSize: 16.0, color: Colors.white, fontWeight: FontWeight.bold),
           maxLines: 1,
         ),
       ),
@@ -260,9 +416,7 @@ Widget postGridView(List<Datum> data) {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(12)),
-                    child: Image.network(data[index].thumbnail!.isNotEmpty
-                            ? data[index].thumbnail!
-                            : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdh87wRxK1XDWDjCCHi1BHgjkM0wzDRC89bHdndVxgHouG0QGSK_VAKir9rdQNVNm0poA&usqp=CAU",
+                    child: Image.network(data[index].thumbnail ?? "https://st2.depositphotos.com/1006899/8089/i/450/depositphotos_80897014-stock-photo-page-not-found.jpg",
                           height: 180,
                           width: 140,
                           fit: BoxFit.cover,
@@ -300,6 +454,132 @@ Widget postGridView(List<Datum> data) {
                                   maxLines: 1,
                                 ),
                          ),
+                
+                ],
+                
+              ),
+            ),
+          ],
+           
+        ),
+        
+         );
+         
+        },
+        
+     ),
+     
+   );
+  }
+
+
+
+Widget catView(String title, List<Datum> data) {
+    return Container(
+     child: Column(
+         children: [
+           Row(
+  children: [
+    Expanded(
+      child: Divider(
+        height: 1,
+        color: Colors.grey,
+      ),
+    ),
+     SizedBox(width: 8.0),
+      Center(
+        child: Text(
+          title,
+          style: TextStyle(fontSize: 16.0, color: Colors.white, fontWeight: FontWeight.bold),
+          maxLines: 1,
+        ),
+      ),
+    SizedBox(width: 8.0),
+    Expanded(
+      child: Divider(
+        height: 1,
+        color: Colors.grey,
+      ),
+    ),
+  ],
+),
+
+          SizedBox(height: 12.0),
+         categoryGridView(data),
+            SizedBox(height: 8.0),
+              Center(
+  child: SizedBox(
+    width: MediaQuery.of(context).size.width - 16, 
+    child: TextButton(
+      onPressed: () {
+     
+      },
+      child: Text('VIEW ALL'),
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.white, shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0), 
+          side: BorderSide(color: Colors.grey), 
+        ),
+      ),
+    ),
+  ),
+),
+
+
+         ],
+
+     ),
+    );
+  }
+
+Widget categoryGridView(List<Datum> data) {
+   return SizedBox(
+     height: 120,
+     child: GridView.builder(
+       shrinkWrap: true,
+       scrollDirection: Axis.horizontal,
+       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1, crossAxisSpacing: 0, mainAxisSpacing: 24, mainAxisExtent: 80),
+       itemCount: data.length, itemBuilder: (BuildContext context, int index) { 
+        String boutiqueName = data[index].category ?? "";
+        String capitalizedText = boutiqueName.split('').map((char) => char.toUpperCase()).join('');
+         return GestureDetector(
+              onTap: () {
+        //        Navigator.of(context).push(
+        //      CupertinoPageRoute(
+        //           fullscreenDialog: true,
+        //           builder: (context) => DetailScreen(item: datat[index]),
+                  
+        //   ),
+        // );
+       },    
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+               Container(
+            height: 80,
+         decoration: BoxDecoration(
+         color: Colors.grey, 
+        ),
+  child: Image.network(
+    data[index].imageUrl ?? "https://st2.depositphotos.com/1006899/8089/i/450/depositphotos_80897014-stock-photo-page-not-found.jpg",
+    height: 80,
+    fit: BoxFit.cover,
+  ),
+),
+
+                 
+                  SizedBox(height: 4,),
+                 Text(
+                                  capitalizedText, 
+                                  style: TextStyle(fontSize: 13.0, color: Colors.grey, fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                ),
                 
                 ],
                 
@@ -650,15 +930,6 @@ Widget build(BuildContext context) {
 
 }
 
-
-    // case category = "category"
-    // case banner = "banner"
-    // case boutique = "boutique"
-    // case post = "post"
-    // case product = "product"
-    // case liveBoutique = "Live Stream"
-
-
 class ApiResponse {
   final bool success;
   final String summary;
@@ -755,6 +1026,7 @@ class Post {
   }
 }
 
+
 class Datum {
   final String? title;
   final String? description;
@@ -777,6 +1049,14 @@ class Datum {
   final String? bannerType;
   //
 
+  //cat
+  final String? imageUrl;
+
+  //product
+   final String? itemName;
+   final double? itemPrice;
+   
+
   Datum({
     this.title,
     this.description,
@@ -787,6 +1067,7 @@ class Datum {
     this.coverPic,
     this.address,
     this.products,
+   
 
     //banner
     this.id,
@@ -798,6 +1079,16 @@ class Datum {
     this.bannerUrl,
     this.bannerType,
     //
+
+    //cat
+     this.imageUrl,
+
+    
+    //product
+    this.itemName,
+    this.itemPrice,
+  
+
   });
 
   factory Datum.fromJson(Map<String, dynamic>? json) {
@@ -812,6 +1103,7 @@ class Datum {
         coverPic: null,
         address: null,
         products: null,
+     
 
         //banner
         id: null,
@@ -822,6 +1114,13 @@ class Datum {
         createdAt: null,
         bannerUrl: null,
         bannerType: null,
+
+        //cat
+        imageUrl: null,
+     
+      //product
+      itemName: null,
+      itemPrice: null,
       );
     }
     return Datum(
@@ -846,6 +1145,13 @@ class Datum {
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       bannerUrl: json['banner_url'],
       bannerType: json['banner_type'],
+
+      //cat
+      imageUrl: json['image_url'],
+
+       //Product
+      itemName: json['item_name'], 
+      itemPrice: (json['item_price'] ?? 0.0).toDouble(),
       //
     );
   }
