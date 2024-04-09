@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_134/TabbarForApp/HomeScreen.dart';
+import 'package:flutter_application_134/HomeView/Model/HomeApiResponse.dart';
 
 class DetailScreen extends StatelessWidget {
   final Products item;

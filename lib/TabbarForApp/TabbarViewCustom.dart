@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_134/TabbarForApp/HomeScreen.dart';
+import 'package:flutter_application_134/HomeView/View/HomeScreen.dart';
 import 'package:flutter_application_134/TabbarForApp/ProfileScreen.dart';
 
 class TabbarViewCustom extends StatefulWidget {
